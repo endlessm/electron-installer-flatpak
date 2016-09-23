@@ -2,8 +2,8 @@
 <% if (productName) { %>Name=<%= productName %>
 <% } %><% if (description) { %>Comment=<%= description %>
 <% } %><% if (genericName) { %>GenericName=<%= genericName %>
-<% } %><% if (name) { %>Exec=<%= name %> %U
-<% } %><% if (name) { %>Icon=<%= name %>
+<% } %><% if (bin) { %>Exec=<%= bin %> %U
+<% } %><% if (id) { %>Icon=<%= id %>
 <% } %>Type=Application
 StartupNotify=true
 <% if (categories && categories.length) { %>Categories=<%= categories.join(';') %>;

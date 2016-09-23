@@ -3,58 +3,18 @@
 var _ = require('lodash')
 var asar = require('asar')
 var async = require('async')
-var child = require('child_process')
 var debug = require('debug')
+var flatpak = require('flatpak-bundler')
 var fs = require('fs-extra')
-var fsize = require('get-folder-size')
-var glob = require('glob')
 var path = require('path')
 var temp = require('temp').track()
-var wrap = require('word-wrap')
 
 var pkg = require('../package.json')
 
 var defaultLogger = debug(pkg.name)
 
 var defaultRename = function (dest, src) {
-  return path.join(dest, '<%= name %>_<%= version %>_<%= arch %>.flatpak')
-}
-
-/**
- * Spawn a child process.
- */
-var spawn = function (options, command, args, callback) {
-  var spawnedProcess = null
-  var error = null
-  var stderr = ''
-
-  options.logger('Executing command ' + command + ' ' + args.join(' '))
-
-  try {
-    spawnedProcess = child.spawn(command, args)
-  } catch (err) {
-    process.nextTick(function () {
-      callback(err, stderr)
-    })
-    return
-  }
-
-  spawnedProcess.stderr.on('data', function (data) {
-    stderr += data
-  })
-
-  spawnedProcess.on('error', function (err) {
-    error = error || err
-  })
-
-  spawnedProcess.on('close', function (code, signal) {
-    if (code !== 0) {
-      error = error || signal || code
-    }
-
-    callback(error && new Error('Error executing command (' + (error.message || error) + '): ' +
-      '\n' + command + ' ' + args.join(' ') + '\n' + stderr))
-  })
+  return path.join(dest, src)
 }
 
 /**
@@ -92,76 +52,35 @@ var readLicense = function (options, callback) {
 }
 
 /**
- * Get the size of the app.
- */
-var getSize = function (options, callback) {
-  fsize(options.src, callback)
-}
-
-/**
  * Get the hash of default options for the installer. Some come from the info
  * read from `package.json`, and some are hardcoded.
  */
 var getDefaults = function (data, callback) {
   async.parallel([
-    async.apply(readMeta, data),
-    async.apply(getSize, {src: data.src})
+    async.apply(readMeta, data)
   ], function (err, results) {
     var pkg = results[0] || {}
-    var size = results[1] || 0
 
     var defaults = {
-      name: pkg.name || 'electron',
+      id: 'io.atom.electron',
       productName: pkg.productName || pkg.name,
       genericName: pkg.genericName || pkg.productName || pkg.name,
       description: pkg.description,
-      productDescription: pkg.productDescription || pkg.description,
-      version: pkg.version || '0.0.0',
-      revision: pkg.revision || '1',
 
-      section: 'utils',
-      priority: 'optional',
+      branch: 'master',
       arch: undefined,
-      size: Math.ceil(size / 1024),
 
-      depends: [
-        'git',
-        'gconf2',
-        'gconf-service',
-        'gvfs-bin',
-        'libc6',
-        'libcap2',
-        'libgtk2.0-0',
-        'libudev0 | libudev1',
-        'libgcrypt11 | libgcrypt20',
-        'libnotify4',
-        'libnss3',
-        'libxtst6',
-        'python',
-        'xdg-utils'
+      runtime: 'io.atom.electron.Platform',
+      runtimeVersion: 'master',
+      sdk: 'io.atom.electron.Sdk',
+      finishArgs: [
+        '--share=ipc',
+        '--socket=x11',
+        '--socket=pulseaudio',
+        '--filesystem=home:rw',
+        '--share=network',
+        '--device=dri'
       ],
-      recommends: [
-        'lsb-release'
-      ],
-      suggests: [
-        'gir1.2-gnomekeyring-1.0',
-        'libgnome-keyring0'
-      ],
-      enhances: [
-      ],
-      preDepends: [
-      ],
-
-      maintainer: pkg.author && (typeof pkg.author === 'string'
-        ? pkg.author.replace(/\s+\([^)]+\)/, '')
-        : pkg.author.name +
-          (pkg.author.email != null ? ' <' + pkg.author.email + '>' : '')
-      ),
-
-      homepage: pkg.homepage || (pkg.author && (typeof pkg.author === 'string'
-        ? pkg.author.replace(/.*\(([^)]+)\).*/, '$1')
-        : pkg.author.url
-      )),
 
       bin: pkg.name || 'electron',
       icon: path.resolve(__dirname, '../resources/icon.png'),
@@ -172,9 +91,7 @@ var getDefaults = function (data, callback) {
         'Utility'
       ],
 
-      mimeType: [],
-
-      lintianOverrides: []
+      mimeType: []
     }
 
     callback(err, defaults)
@@ -187,10 +104,6 @@ var getDefaults = function (data, callback) {
 var getOptions = function (data, defaults, callback) {
   // Flatten everything for ease of use.
   var options = _.defaults({}, data, data.options, defaults)
-
-  // Wrap the extended description to avoid lintian warning about
-  // `extended-description-line-too-long`.
-  options.productDescription = wrap(options.productDescription, {width: 80, indent: ' '})
 
   callback(null, options)
 }
@@ -212,48 +125,13 @@ var generateTemplate = function (options, file, callback) {
 }
 
 /**
- * Create the control file for the package.
- *
- * See: https://www.debian.org/doc/debian-policy/ch-controlfields.html
- */
-var createControl = function (options, dir, callback) {
-  var controlSrc = path.resolve(__dirname, '../resources/control.ejs')
-  var controlDest = path.join(dir, 'DEBIAN/control')
-  options.logger('Creating control file at ' + controlDest)
-
-  async.waterfall([
-    async.apply(generateTemplate, options, controlSrc),
-    async.apply(fs.outputFile, controlDest)
-  ], function (err) {
-    callback(err && new Error('Error creating control file: ' + (err.message || err)))
-  })
-}
-
-/**
- * Create the binary for the package.
- */
-var createBinary = function (options, dir, callback) {
-  var binDir = path.join(dir, 'usr/bin')
-  var binSrc = path.join('../lib', options.name, options.bin)
-  var binDest = path.join(binDir, options.name)
-  options.logger('Symlinking binary from ' + binSrc + ' to ' + binDest)
-
-  async.waterfall([
-    async.apply(fs.ensureDir, binDir),
-    async.apply(fs.symlink, binSrc, binDest, 'file')
-  ], function (err) {
-    callback(err && new Error('Error creating binary file: ' + (err.message || err)))
-  })
-}
-
-/**
  * Create the desktop file for the package.
  *
  * See: http://standards.freedesktop.org/desktop-entry-spec/latest/
  */
 var createDesktop = function (options, dir, callback) {
   var desktopSrc = path.resolve(__dirname, '../resources/desktop.ejs')
-  var desktopDest = path.join(dir, 'usr/share/applications', options.name + '.desktop')
+  var desktopDest = path.join(dir, 'share/applications', options.id + '.desktop')
   options.logger('Creating desktop file at ' + desktopDest)
 
   async.waterfall([
@@ -268,7 +146,7 @@ var createDesktop = function (options, dir, callback) {
  * Create pixmap icon for the package.
  */
 var createPixmapIcon = function (options, dir, callback) {
-  var iconFile = path.join(dir, 'usr/share/pixmaps', options.name + '.png')
+  var iconFile = path.join(dir, 'share/pixmaps', options.id + '.png')
   options.logger('Creating icon file at ' + iconFile)
 
   fs.copy(options.icon, iconFile, function (err) {
@@ -281,7 +159,7 @@ var createPixmapIcon = function (options, dir, callback) {
  */
 var createHicolorIcon = function (options, dir, callback) {
   async.forEachOf(options.icon, function (icon, resolution, callback) {
-    var iconFile = path.join(dir, 'usr/share/icons/hicolor', resolution, 'apps', options.name + '.png')
+    var iconFile = path.join(dir, 'share/icons/hicolor', resolution, 'apps', options.id + '.png')
     options.logger('Creating icon file at ' + iconFile)
 
     fs.copy(icon, iconFile, callback)
@@ -305,7 +183,7 @@ var createIcon = function (options, dir, callback) {
  * Create copyright for the package.
  */
 var createCopyright = function (options, dir, callback) {
-  var copyrightFile = path.join(dir, 'usr/share/doc', options.name, 'copyright')
+  var copyrightFile = path.join(dir, 'share/doc', options.id, 'copyright')
   options.logger('Creating copyright file at ' + copyrightFile)
 
   async.waterfall([
@@ -317,26 +195,10 @@ var createCopyright = function (options, dir, callback) {
 }
 
 /**
- * Create lintian overrides for the package.
- */
-var createOverrides = function (options, dir, callback) {
-  var overridesSrc = path.resolve(__dirname, '../resources/overrides.ejs')
-  var overridesDest = path.join(dir, 'usr/share/lintian/overrides', options.name)
-  options.logger('Creating lintian overrides at ' + overridesDest)
-
-  async.waterfall([
-    async.apply(generateTemplate, options, overridesSrc),
-    async.apply(fs.outputFile, overridesDest)
-  ], function (err) {
-    callback(err && new Error('Error creating lintian overrides file: ' + (err.message || err)))
-  })
-}
-
-/**
  * Copy the application into the package.
  */
 var createApplication = function (options, dir, callback) {
-  var applicationDir = path.join(dir, 'usr/lib', options.name)
+  var applicationDir = path.join(dir, 'lib', options.id)
   options.logger('Copying application to ' + applicationDir)
 
   async.waterfall([
@@ -356,7 +218,7 @@ var createDir = function (options, callback) {
   async.waterfall([
     async.apply(temp.mkdir, 'electron-'),
     function (dir, callback) {
-      dir = path.join(dir, options.name + '_' + options.version + '_' + options.arch)
+      dir = path.join(dir, options.id + '_' + options.version + '_' + options.arch)
       fs.ensureDir(dir, callback)
     }
   ], function (err, dir) {
@@ -371,12 +233,9 @@ var createContents = function (options, dir, callback) {
   options.logger('Creating contents of package')
 
   async.parallel([
-    async.apply(createControl, options, dir),
-    async.apply(createBinary, options, dir),
     async.apply(createDesktop, options, dir),
     async.apply(createIcon, options, dir),
     async.apply(createCopyright, options, dir),
-    async.apply(createOverrides, options, dir),
     async.apply(createApplication, options, dir)
   ], function (err) {
     callback(err, dir)
@@ -384,35 +243,31 @@ var createContents = function (options, dir, callback) {
 }
 
 /**
- * Package everything using `dpkg` and `fakeroot`.
+ * Bundle everything using `flatpak-bundler`.
  */
-var createPackage = function (options, dir, callback) {
-  options.logger('Creating package at ' + dir)
+var createBundle = function (options, dir, callback) {
+  var name = _.template('<%= id %>_<%= branch %>_<%= arch %>.flatpak')(options)
+  var dest = options.rename(options.dest, name)
+  options.logger('Creating package at ' + dest)
 
-  spawn(options, 'fakeroot', ['dpkg-deb', '--build', dir], function (err) {
+  flatpak.bundle({
+    id: options.id,
+    branch: options.branch,
+    runtime: options.runtime,
+    runtimeVersion: options.runtimeVersion,
+    sdk: options.sdk,
+    finishArgs: options.finishArgs,
+    files: [
+      [dir, '/']
+    ],
+    symlinks: [
+      [path.join('/lib', options.id, options.bin), path.join('/bin', options.bin)]
+    ],
+  }, {
+    arch: options.arch,
+    bundlePath: dest
+  }, function (err) {
     callback(err, dir)
-  })
-}
-
-/**
- * Move the package to the specified destination.
- */
-var movePackage = function (options, dir, callback) {
-  options.logger('Moving package to destination')
-
-  var packagePattern = path.join(dir, '../*.flatpak')
-  async.waterfall([
-    async.apply(glob, packagePattern),
-    function (files, callback) {
-      async.each(files, function (file) {
-        var dest = options.rename(options.dest, path.basename(file))
-        dest = _.template(dest)(options)
-        options.logger('Moving file ' + file + ' to ' + dest)
-        fs.move(file, dest, {clobber: true}, callback)
-      }, callback)
-    }
-  ], function (err) {
-    callback(err && new Error('Error moving package files: ' + (err.message || err)), dir)
   })
 }
 
@@ -430,8 +285,7 @@ module.exports = function (data, callback) {
       async.waterfall([
         async.apply(createDir, options),
         async.apply(createContents, options),
-        async.apply(createPackage, options),
-        async.apply(movePackage, options)
+        async.apply(createBundle, options)
       ], function (err) {
         callback(err, options)
       })
