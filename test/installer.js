@@ -17,7 +17,7 @@ describe('module', function () {
         src: 'test/fixtures/app-with-asar/',
         dest: dest,
         rename: function (dest) {
-          return path.join(dest, '<%= name %>_<%= arch %>.deb')
+          return path.join(dest, '<%= name %>_<%= arch %>.flatpak')
         },
 
         options: {
@@ -37,8 +37,8 @@ describe('module', function () {
       rimraf(dest, done)
     })
 
-    it('generates a `.deb` package', function (done) {
-      access(dest + 'footest_i386.deb', done)
+    it('generates a `.flatpak` package', function (done) {
+      access(dest + 'footest_i386.flatpak', done)
     })
   })
 
@@ -50,7 +50,7 @@ describe('module', function () {
         src: 'test/fixtures/app-without-asar/',
         dest: dest,
         rename: function (dest) {
-          return path.join(dest, '<%= name %>_<%= arch %>.deb')
+          return path.join(dest, '<%= name %>_<%= arch %>.flatpak')
         },
 
         options: {
@@ -84,8 +84,8 @@ describe('module', function () {
       rimraf(dest, done)
     })
 
-    it('generates a `.deb` package', function (done) {
-      access(dest + 'bartest_amd64.deb', done)
+    it('generates a `.flatpak` package', function (done) {
+      access(dest + 'bartest_amd64.flatpak', done)
     })
   })
 })

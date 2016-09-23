@@ -17,7 +17,7 @@ var pkg = require('../package.json')
 var defaultLogger = debug(pkg.name)
 
 var defaultRename = function (dest, src) {
-  return path.join(dest, '<%= name %>_<%= version %>_<%= arch %>.deb')
+  return path.join(dest, '<%= name %>_<%= version %>_<%= arch %>.flatpak')
 }
 
 /**
@@ -400,7 +400,7 @@ var createPackage = function (options, dir, callback) {
 var movePackage = function (options, dir, callback) {
   options.logger('Moving package to destination')
 
-  var packagePattern = path.join(dir, '../*.deb')
+  var packagePattern = path.join(dir, '../*.flatpak')
   async.waterfall([
     async.apply(glob, packagePattern),
     function (files, callback) {

@@ -1,19 +1,11 @@
-![Electron Installer for Debian](resources/logo.png)
+![Electron Installer for flatpak](resources/logo.png)
 
-# electron-installer-debian [![Version](https://img.shields.io/npm/v/electron-installer-debian.svg)](https://www.npmjs.com/package/electron-installer-debian) [![Build Status](https://img.shields.io/travis/unindented/electron-installer-debian.svg)](http://travis-ci.org/unindented/electron-installer-debian) [![Dependency Status](https://img.shields.io/gemnasium/unindented/electron-installer-debian.svg)](https://gemnasium.com/unindented/electron-installer-debian)
-
-> Create a Debian package for your Electron app.
+> Create a flatpak for your Electron app.
 
 
 ## Requirements
 
-This tool requires `fakeroot` and `dpkg` to build the `.deb` package.
-
-I'd recommend building your packages on your target platform, but if you insist on using Mac OS X, you can install these tools through [Homebrew](http://brew.sh/):
-
-```
-$ brew install fakeroot dpkg
-```
+This tool requires `flatpak` to be actually installed on your system.
 
 
 ## Installation
@@ -21,13 +13,13 @@ $ brew install fakeroot dpkg
 For use from command-line:
 
 ```
-$ npm install -g electron-installer-debian
+$ npm install -g electron-installer-flatpak
 ```
 
 For use in npm scripts or programmatically:
 
 ```
-$ npm install --save-dev electron-installer-debian
+$ npm install --save-dev electron-installer-flatpak
 ```
 
 
@@ -56,7 +48,7 @@ Say your Electron app lives in `path/to/app`, and has a structure like this:
         └── index.js
 ```
 
-You now run `electron-packager` to build the app for Debian:
+You now run `electron-packager` to build the app for flatpak:
 
 ```
 $ electron-packager . app --platform linux --arch x64 --out dist/
@@ -82,30 +74,30 @@ And you end up with something like this in your `dist` folder:
         └── version
 ```
 
-How do you turn that into a Debian package that your users can install?
+How do you turn that into a flatpak package that your users can install?
 
 ### Command-Line
 
-If you want to run `electron-installer-debian` straight from the command-line, install the package globally:
+If you want to run `electron-installer-flatpak` straight from the command-line, install the package globally:
 
 ```
-$ npm install -g electron-installer-debian
+$ npm install -g electron-installer-flatpak
 ```
 
 And point it to your built app:
 
 ```
-$ electron-installer-debian --src dist/app-linux-x64/ --dest dist/installers/ --arch amd64
+$ electron-installer-flatpak --src dist/app-linux-x64/ --dest dist/installers/ --arch amd64
 ```
 
-You'll end up with the package at `dist/installers/app_0.0.1_amd64.deb`.
+You'll end up with the package at `dist/installers/app_0.0.1_amd64.flatpak`.
 
 ### Scripts
 
-If you want to run `electron-installer-debian` through npm, install the package locally:
+If you want to run `electron-installer-flatpak` through npm, install the package locally:
 
 ```
-$ npm install --save-dev electron-installer-debian
+$ npm install --save-dev electron-installer-flatpak
 ```
 
 Edit the `scripts` section of your `package.json`:
@@ -118,10 +110,10 @@ Edit the `scripts` section of your `package.json`:
   "scripts": {
     "start": "electron .",
     "build": "electron-packager . app --platform linux --arch x64 --out dist/",
-    "deb64": "electron-installer-debian --src dist/app-linux-x64/ --dest dist/installers/ --arch amd64"
+    "flatpak64": "electron-installer-flatpak --src dist/app-linux-x64/ --dest dist/installers/ --arch amd64"
   },
   "devDependencies": {
-    "electron-installer-debian": "*",
+    "electron-installer-flatpak": "*",
     "electron-packager": "*",
     "electron-prebuilt": "*"
   }
@@ -131,23 +123,23 @@ Edit the `scripts` section of your `package.json`:
 And run the script:
 
 ```
-$ npm run deb64
+$ npm run flatpak64
 ```
 
-You'll end up with the package at `dist/installers/app_0.0.1_amd64.deb`.
+You'll end up with the package at `dist/installers/app_0.0.1_amd64.flatpak`.
 
 ### Programmatically
 
 Install the package locally:
 
 ```
-$ npm install --save-dev electron-installer-debian
+$ npm install --save-dev electron-installer-flatpak
 ```
 
 And write something like this:
 
 ```js
-var installer = require('electron-installer-debian')
+var installer = require('electron-installer-flatpak')
 
 var options = {
   src: 'dist/app-linux-x64/',
@@ -167,7 +159,7 @@ installer(options, function (err) {
 })
 ```
 
-You'll end up with the package at `dist/installers/app_0.0.1_amd64.deb`.
+You'll end up with the package at `dist/installers/app_0.0.1_amd64.flatpak`.
 
 ### Options
 
@@ -189,7 +181,7 @@ Even though you can pass most of these options through the command-line interfac
 And pass that instead with the `config` option:
 
 ```
-$ electron-installer-debian --src dist/app-linux-x64/ --arch amd64 --config config.json
+$ electron-installer-flatpak --src dist/app-linux-x64/ --arch amd64 --config config.json
 ```
 
 Anyways, here's the full list of options:
@@ -204,7 +196,7 @@ Path to the folder that contains your built Electron application.
 Type: `String`
 Default: `undefined`
 
-Path to the folder that will contain your Debian installer.
+Path to the folder that will contain your flatpak installer.
 
 #### rename
 Type: `Function`
@@ -216,9 +208,9 @@ Function that renames all files generated by the task just before putting them i
 Type: `String`
 Default: `package.name`
 
-Name of the package (e.g. `atom`), used in the [`Package` field of the `control` specification](https://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Package).
+Name of the package (e.g. `atom`), used in the [`Package` field of the `control` specification](https://www.flatpak.org/doc/flatpak-policy/ch-controlfields.html#s-f-Package).
 
-According to the *Debian Policy Manual*:
+According to the *flatpak Policy Manual*:
 
 > Package names [...] must consist only of lower case letters (a-z), digits (0-9), plus (+) and minus (-) signs, and periods (.). They must be at least two characters long and must start with an alphanumeric character.
 
@@ -264,7 +256,7 @@ Default: `"utils"`
 
 Application area into which the package has been classified, used in the [`Section` field of the `control` specification](https://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Section).
 
-You can read more about [sections](https://www.debian.org/doc/debian-policy/ch-archive.html#s-subsections), and also check out the [list of existing sections in Debian unstable](https://packages.debian.org/unstable/).
+You can read more about [sections](https://www.debian.org/doc/debian-policy/ch-archive.html#s-subsections), and also check out the [list of existing sections in debian unstable](https://packages.debian.org/unstable/).
 
 #### options.priority
 Type: `String`
@@ -279,8 +271,6 @@ Type: `String`
 Default: `undefined`
 
 Machine architecture the package is targeted to, used in the [`Architecture` field of the `control` specification](https://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Architecture).
-
-For possible values see the output of `dpkg-architecture -L`.
 
 #### options.size
 Type: `Integer`
@@ -385,13 +375,14 @@ You can use these to quieten [`lintian`](https://lintian.debian.org/manual/).
 
 ## Meta
 
-* Code: `git clone git://github.com/unindented/electron-installer-debian.git`
-* Home: <https://github.com/unindented/electron-installer-debian/>
+* Code: `git clone git://github.com/mattdangerw/electron-installer-flatpak.git`
+* Home: <https://github.com/mattdangerw/electron-installer-flatpak/>
 
 
 ## Contributors
 
 * Daniel Perez Alvarez ([unindented@gmail.com](mailto:unindented@gmail.com))
+* Matt Watson ([mattdangerw@gmail.com](mailto:mattdangerw@gmail.com))
 
 
 ## License

@@ -22,8 +22,8 @@ describe('cli', function () {
       rimraf(dest, done)
     })
 
-    it('generates a `.deb` package', function (done) {
-      access(dest + 'footest_0.0.1_i386.deb', done)
+    it('generates a `.flatpak` package', function (done) {
+      access(dest + 'footest_0.0.1_i386.flatpak', done)
     })
   })
 
@@ -38,8 +38,8 @@ describe('cli', function () {
       ], done)
     })
 
-    it('generates a `.deb` package', function (done) {
-      access(dest + 'bartest_0.0.1_amd64.deb', done)
+    it('generates a `.flatpak` package', function (done) {
+      access(dest + 'bartest_0.0.1_amd64.flatpak', done)
     })
   })
 })

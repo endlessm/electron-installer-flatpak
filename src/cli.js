@@ -14,7 +14,7 @@ var argv = yargs
     demand: true
   })
   .option('dest', {
-    describe: 'Directory that will contain the resulting Debian installer',
+    describe: 'Directory that will contain the resulting Flatpak',
     demand: true
   })
   .option('arch', {
