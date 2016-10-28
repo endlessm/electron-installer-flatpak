@@ -17,6 +17,10 @@ var defaultRename = function (dest, src) {
   return path.join(dest, src)
 }
 
+var getPixmapPath = function (options) {
+  return path.join('/share/pixmaps', options.id + '.png')
+}
+
 /**
  * Read `package.json` either from `resources.app.asar` (if the app is packaged)
  * or from `resources/app/package.json` (if it is not).
@@ -147,7 +151,7 @@ var createDesktop = function (options, dir, callback) {
  * Create pixmap icon for the package.
  */
 var createPixmapIcon = function (options, dir, callback) {
-  var iconFile = path.join(dir, 'share/pixmaps', options.id + '.png')
+  var iconFile = path.join(dir, getPixmapPath(options))
   options.logger('Creating icon file at ' + iconFile)
 
   fs.copy(options.icon, iconFile, function (err) {
@@ -250,6 +254,8 @@ var createBundle = function (options, dir, callback) {
   var name = _.template('<%= id %>_<%= branch %>_<%= arch %>.flatpak')(options)
   var dest = options.rename(options.dest, name)
   options.logger('Creating package at ' + dest)
+  var extraExports = []
+  if (!_.isObject(options.icon)) extraExports.push(getPixmapPath(options))
 
   flatpak.bundle({
     id: options.id,
@@ -264,6 +270,7 @@ var createBundle = function (options, dir, callback) {
     symlinks: [
       [path.join('/lib', options.id, options.bin), path.join('/bin', options.bin)]
     ],
+    extraExports: extraExports
   }, {
     arch: options.arch,
     bundlePath: dest
