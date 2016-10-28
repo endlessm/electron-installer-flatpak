@@ -79,7 +79,8 @@ var getDefaults = function (data, callback) {
         '--socket=pulseaudio',
         '--filesystem=home:rw',
         '--share=network',
-        '--device=dri'
+        '--device=dri',
+        '--talk-name=org.freedesktop.Notifications'
       ],
 
       bin: pkg.name || 'electron',
