@@ -74,9 +74,12 @@ var getDefaults = function (data, callback) {
       branch: 'master',
       arch: undefined,
 
-      runtime: 'io.atom.electron.Platform',
-      runtimeVersion: 'master',
-      sdk: 'io.atom.electron.Sdk',
+      base: 'io.atom.electron.BaseApp',
+      baseVersion: 'master',
+      baseFlatpakref: 'https://s3-us-west-2.amazonaws.com/electron-flatpak.endlessm.com/electron-base-app-master.flatpakref',
+      runtime: 'org.freedesktop.Platform',
+      runtimeVersion: '1.4',
+      sdk: 'org.freedesktop.Sdk',
       finishArgs: [
         '--share=ipc',
         '--socket=x11',
@@ -260,6 +263,9 @@ var createBundle = function (options, dir, callback) {
   flatpak.bundle({
     id: options.id,
     branch: options.branch,
+    base: options.base,
+    baseVersion: options.baseVersion,
+    baseFlatpakref: options.baseFlatpakref,
     runtime: options.runtime,
     runtimeVersion: options.runtimeVersion,
     sdk: options.sdk,
