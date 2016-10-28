@@ -270,6 +270,7 @@ var createBundle = function (options, dir, callback) {
     runtimeVersion: options.runtimeVersion,
     sdk: options.sdk,
     finishArgs: options.finishArgs,
+    command: options.bin,
     files: [
       [dir, '/']
     ],
