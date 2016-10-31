@@ -81,12 +81,17 @@ var getDefaults = function (data, callback) {
       runtimeVersion: '1.4',
       sdk: 'org.freedesktop.Sdk',
       finishArgs: [
-        '--share=ipc',
-        '--socket=x11',
-        '--socket=pulseaudio',
-        '--filesystem=home:rw',
-        '--share=network',
+        // X Rendering
+        '--socket=x11', '--share=ipc',
+        // Open GL
         '--device=dri',
+        // Audio output
+        '--socket=pulseaudio',
+        // Read/write home directory access
+        '--filesystem=home',
+        // Allow communication with network
+        '--share=network',
+        // System notifications with libnotify
         '--talk-name=org.freedesktop.Notifications'
       ],
 
