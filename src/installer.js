@@ -89,6 +89,8 @@ var getDefaults = function (data, callback) {
         '--socket=pulseaudio',
         // Read/write home directory access
         '--filesystem=home',
+        // Chromium uses a socket in tmp for its singleton check
+        '--filesystem=/tmp',
         // Allow communication with network
         '--share=network',
         // System notifications with libnotify
