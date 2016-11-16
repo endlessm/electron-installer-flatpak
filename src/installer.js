@@ -8,6 +8,7 @@ var flatpak = require('flatpak-bundler')
 var fs = require('fs-extra')
 var path = require('path')
 var temp = require('temp').track()
+var url = require('url')
 
 var pkg = require('../package.json')
 
@@ -19,6 +20,19 @@ var defaultRename = function (dest, src) {
 
 var getPixmapPath = function (options) {
   return path.join('/share/pixmaps', options.id + '.png')
+}
+
+var getAppId = function (name, website) {
+  var host = 'electron.atom.io'
+  if (website) {
+    var urlObject = url.parse(website)
+    if (urlObject.host) host = urlObject.host
+  }
+  var parts = host.split('.')
+  if (parts[0] === 'www') parts.shift()
+  parts = parts.reverse()
+  parts.push(name)
+  return parts.join('.')
 }
 
 /**
@@ -66,7 +80,7 @@ var getDefaults = function (data, callback) {
     var pkg = results[0] || {}
 
     var defaults = {
-      id: 'io.atom.electron',
+      id: getAppId(pkg.name, pkg.homepage),
       productName: pkg.productName || pkg.name,
       genericName: pkg.genericName || pkg.productName || pkg.name,
       description: pkg.description,
