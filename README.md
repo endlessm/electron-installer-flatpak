@@ -276,7 +276,7 @@ Default: `undefined`
 Machine architecture the package is targeted to.
 
 #### options.finishArgs
-Type: `String`
+Type: `Array[String]`
 Default:
 ```js
 [
