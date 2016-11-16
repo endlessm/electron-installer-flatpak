@@ -373,8 +373,8 @@ MIME types the application is able to open, used in the [`MimeType` field of the
 
 ## Meta
 
-* Code: `git clone git://github.com/mattdangerw/electron-installer-flatpak.git`
-* Home: <https://github.com/mattdangerw/electron-installer-flatpak/>
+* Code: `git clone git://github.com/endlessm/electron-installer-flatpak.git`
+* Home: <https://github.com/endlessm/electron-installer-flatpak/>
 
 
 ## Contributors

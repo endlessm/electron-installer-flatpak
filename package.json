@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/mattdangerw/electron-installer-flatpak.git"
+    "url": "git://github.com/endlessm/electron-installer-flatpak.git"
   },
   "keywords": [
     "electron",
