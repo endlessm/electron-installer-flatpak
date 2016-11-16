@@ -5,7 +5,7 @@
   "license": "MIT",
   "author": {
     "name": "Daniel Perez Alvarez",
-    "email": "unindented@gmail.com",
+    "email": "unindented@gmail.com"
   },
   "private": true,
   "main": "src/index.js",

@@ -5,7 +5,7 @@ var access = require('./helpers/access')
 var spawn = require('./helpers/spawn')
 
 describe('cli', function () {
-  this.timeout(10000)
+  this.timeout(30000)
 
   describe('with an app with asar', function (test) {
     var dest = 'test/fixtures/out/foo/'
@@ -23,7 +23,7 @@ describe('cli', function () {
     })
 
     it('generates a `.flatpak` package', function (done) {
-      access(dest + 'footest_0.0.1_i386.flatpak', done)
+      access(dest + 'io.atom.electron.footest_master_i386.flatpak', done)
     })
   })
 
@@ -39,7 +39,7 @@ describe('cli', function () {
     })
 
     it('generates a `.flatpak` package', function (done) {
-      access(dest + 'bartest_0.0.1_amd64.flatpak', done)
+      access(dest + 'com.foo.bartest_master_amd64.flatpak', done)
     })
   })
 })

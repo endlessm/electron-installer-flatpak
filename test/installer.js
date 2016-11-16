@@ -2,33 +2,22 @@
 
 var installer = require('..')
 
-var path = require('path')
 var rimraf = require('rimraf')
 var access = require('./helpers/access')
 
 describe('module', function () {
-  this.timeout(10000)
+  this.timeout(30000)
 
   describe('with an app with asar', function (test) {
-    var dest = 'test/fixtures/out/foo/'
+    var dest = 'test/fixtures/out/foo/bar/'
 
     before(function (done) {
       installer({
         src: 'test/fixtures/app-with-asar/',
         dest: dest,
-        rename: function (dest) {
-          return path.join(dest, '<%= name %>_<%= arch %>.flatpak')
-        },
 
         options: {
-          productDescription: 'Just a test.',
-          section: 'devel',
-          priority: 'optional',
-          arch: 'i386',
-          depends: [],
-          recommends: [],
-          suggests: [],
-          categories: []
+          arch: 'i386'
         }
       }, done)
     })
@@ -38,7 +27,7 @@ describe('module', function () {
     })
 
     it('generates a `.flatpak` package', function (done) {
-      access(dest + 'footest_i386.flatpak', done)
+      access(dest + 'io.atom.electron.footest_master_i386.flatpak', done)
     })
   })
 
@@ -49,33 +38,15 @@ describe('module', function () {
       installer({
         src: 'test/fixtures/app-without-asar/',
         dest: dest,
-        rename: function (dest) {
-          return path.join(dest, '<%= name %>_<%= arch %>.flatpak')
-        },
 
         options: {
           icon: {
             '1024x1024': 'test/fixtures/icon.png'
           },
           bin: 'resources/cli/bar.sh',
-          productDescription: 'Just a test.',
           section: 'devel',
           priority: 'optional',
-          arch: 'amd64',
-          depends: [],
-          recommends: [],
-          suggests: [],
-          categories: [
-            'Utility'
-          ],
-          mimeType: [
-            'text/plain'
-          ],
-          lintianOverrides: [
-            'changelog-file-missing-in-native-package',
-            'executable-not-elf-or-script',
-            'extra-license-file'
-          ]
+          arch: 'amd64'
         }
       }, done)
     })
@@ -85,7 +56,7 @@ describe('module', function () {
     })
 
     it('generates a `.flatpak` package', function (done) {
-      access(dest + 'bartest_amd64.flatpak', done)
+      access(dest + 'com.foo.bartest_master_amd64.flatpak', done)
     })
   })
 })
