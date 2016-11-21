@@ -2,7 +2,8 @@
 
 Create a flatpak for your Electron app. This is based off the
 [electron-installer-debian](https://github.com/unindented/electron-installer-debian)
-tool.
+tool. Add flatpak support to an electron app using [electron-packager](https://github.com/electron-userland/electron-packager)
+with minimal configuration.
 
 ## Requirements
 
@@ -247,7 +248,7 @@ Base app version, used in the [`base-version` field of a flatpak-builder manifes
 
 #### options.baseFlatpakref
 Type: `String`
-Default: `FIXME`
+Default: `https://s3-us-west-2.amazonaws.com/electron-flatpak.endlessm.com/electron-base-app-master.flatpakref`
 
 Url of a flatpakref to use to auto install the base application.
 
