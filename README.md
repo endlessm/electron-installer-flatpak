@@ -1,4 +1,4 @@
-# electron-installer-flatpak [![Version](https://img.shields.io/npm/v/electron-installer-flatpak.svg)](https://www.npmjs.com/package/electron-installer-flatpak)
+# electron-installer-flatpak [![Version](https://img.shields.io/npm/v/electron-installer-flatpak.svg)](https://www.npmjs.com/package/electron-installer-flatpak) [![Build Status](https://img.shields.io/travis/endlessm/electron-installer-flatpak/master.svg)](http://travis-ci.org/endlessm/electron-installer-flatpak)
 
 Create a flatpak for your Electron app. This is based off the
 [electron-installer-debian](https://github.com/unindented/electron-installer-debian)
