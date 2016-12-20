@@ -89,10 +89,10 @@ $ npm install -g electron-installer-flatpak
 And point it to your built app:
 
 ```
-$ electron-installer-flatpak --src dist/app-linux-x64/ --dest dist/installers/ --arch x86_64
+$ electron-installer-flatpak --src dist/app-linux-x64/ --dest dist/installers/ --arch x64
 ```
 
-You'll end up with the package at `dist/installers/app_0.0.1_x86_64.flatpak`.
+You'll end up with the package at `dist/installers/app_0.0.1_x64.flatpak`.
 
 ### Scripts
 
@@ -111,8 +111,8 @@ Edit the `scripts` section of your `package.json`:
   "version": "0.0.1",
   "scripts": {
     "start": "electron .",
-    "build": "electron-packager . app --platform linux --arch x86_64 --out dist/",
-    "flatpak64": "electron-installer-flatpak --src dist/app-linux-x64/ --dest dist/installers/ --arch x86_64"
+    "build": "electron-packager . app --platform linux --arch x64 --out dist/",
+    "flatpak64": "electron-installer-flatpak --src dist/app-linux-x64/ --dest dist/installers/ --arch x64"
   },
   "devDependencies": {
     "electron-installer-flatpak": "*",
@@ -128,7 +128,7 @@ And run the script:
 $ npm run flatpak64
 ```
 
-You'll end up with the package at `dist/installers/app_0.0.1_x86_64.flatpak`.
+You'll end up with the package at `dist/installers/app_0.0.1_x64.flatpak`.
 
 ### Programmatically
 
@@ -146,7 +146,7 @@ var installer = require('electron-installer-flatpak')
 var options = {
   src: 'dist/app-linux-x64/',
   dest: 'dist/installers/',
-  arch: 'amd64'
+  arch: 'x64'
 }
 
 console.log('Creating package (this may take a while)')
@@ -161,7 +161,7 @@ installer(options, function (err) {
 })
 ```
 
-You'll end up with the package at `dist/installers/app_0.0.1_x86_64.flatpak`.
+You'll end up with the package at `dist/installers/app_0.0.1_x64.flatpak`.
 
 ### Options
 
@@ -180,7 +180,7 @@ Even though you can pass most of these options through the command-line interfac
 And pass that instead with the `config` option:
 
 ```
-$ electron-installer-flatpak --src dist/app-linux-x64/ --arch x86_64 --config config.json
+$ electron-installer-flatpak --src dist/app-linux-x64/ --arch x64 --config config.json
 ```
 
 Anyways, here's the full list of options:
@@ -274,7 +274,10 @@ Sdk id, used in the [`sdk` field of a flatpak-builder manifest](http://flatpak.o
 Type: `String`
 Default: `undefined`
 
-Machine architecture the package is targeted to.
+Machine architecture the package is targeted to. Suggested to use node style
+arches here ('ia32', 'x64'), which will be converted to flatpak style arches
+('i386', 'x86_64') when calling into the actual flatpak commands. Directly
+using flatpak style arches is also supported.
 
 #### options.finishArgs
 Type: `Array[String]`
