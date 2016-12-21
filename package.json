@@ -1,7 +1,7 @@
 {
   "name": "electron-installer-flatpak",
   "description": "Create a Flatpak package for your Electron app.",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "license": "MIT",
   "author": {
     "name": "Matt Watson",
