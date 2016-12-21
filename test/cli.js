@@ -14,7 +14,7 @@ describe('cli', function () {
       spawn('./src/cli.js', [
         '--src', 'test/fixtures/app-with-asar/',
         '--dest', dest,
-        '--arch', 'i386'
+        '--arch', 'ia32'
       ], done)
     })
 
@@ -23,7 +23,7 @@ describe('cli', function () {
     })
 
     it('generates a `.flatpak` package', function (done) {
-      access(dest + 'io.atom.electron.footest_master_i386.flatpak', done)
+      access(dest + 'io.atom.electron.footest_master_ia32.flatpak', done)
     })
   })
 
@@ -34,12 +34,12 @@ describe('cli', function () {
       spawn('node src/cli.js', [
         '--src', 'test/fixtures/app-without-asar/',
         '--dest', dest,
-        '--arch', 'amd64'
+        '--arch', 'x64'
       ], done)
     })
 
     it('generates a `.flatpak` package', function (done) {
-      access(dest + 'com.foo.bartest_master_amd64.flatpak', done)
+      access(dest + 'com.foo.bartest_master_x64.flatpak', done)
     })
   })
 })

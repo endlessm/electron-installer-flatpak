@@ -14,8 +14,8 @@
     "start": "electron .",
     "exe32": "electron-packager . poopie --platform linux --arch ia32 --out dist/ --ignore \"(dist|node_modules/electron.*)\"",
     "exe64": "electron-packager . poopie --platform linux --arch x64 --out dist/ --ignore \"(dist|node_modules/electron.*)\"",
-    "flatpak32": "electron-installer-flatpak --src dist/poopie-linux-ia32/ --arch i386 --config config.json",
-    "flatpak64": "electron-installer-flatpak --src dist/poopie-linux-x64/ --arch amd64 --config config.json",
+    "flatpak32": "electron-installer-flatpak --src dist/poopie-linux-ia32/ --arch ia32 --config config.json",
+    "flatpak64": "electron-installer-flatpak --src dist/poopie-linux-x64/ --arch x64 --config config.json",
     "build": "npm run clean && npm run exe32 && npm run flatpak32 && npm run exe64 && npm run flatpak64"
   },
   "devDependencies": {
