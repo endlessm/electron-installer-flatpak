@@ -110,6 +110,7 @@ var getDefaults = function (data, callback) {
         // System notifications with libnotify
         '--talk-name=org.freedesktop.Notifications'
       ],
+      modules: [],
 
       bin: pkg.name || 'electron',
       icon: path.resolve(__dirname, '../resources/icon.png'),
@@ -298,7 +299,8 @@ var createBundle = function (options, dir, callback) {
     symlinks: [
       [path.join('/lib', options.id, options.bin), path.join('/bin', options.bin)]
     ],
-    extraExports: extraExports
+    extraExports: extraExports,
+    modules: options.modules
   }, {
     arch: options.arch,
     bundlePath: dest

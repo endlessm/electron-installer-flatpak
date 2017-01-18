@@ -326,6 +326,33 @@ Arguments to use when call `flatpak build-finish`, use in the [`finish-args` fie
 
 Changing this can be used to customize permissions of the sandbox the flatpak will run in.
 
+#### options.modules
+Type: `Array[Object]`
+Default: `[]`
+
+This option can be used to build extra software modules into the flatpak
+application sandbox. Most electron applications will not need this, but if you
+are using native node modules that require certain libraries on the system, this
+may be necessary. For example, to build [libgit2](https://libgit2.github.com/)
+to use with [nodegit](https://github.com/nodegit/nodegit), add the following to
+your modules list.
+```
+modules: [
+  {
+    name: 'libgit2',
+    cmake: true,
+    configOpts: [ '-DBUILD_SHARED_LIBS:BOOL=ON', '-DTHREADSAFE=ON' ],
+    sources: [{
+      type: 'git',
+      url: 'https://github.com/libgit2/libgit2.git',
+      branch: 'maint/v0.24'
+    }]
+  }
+]
+```
+
+See the [`modules` field of a flatpak-builder manifest](http://flatpak.org/flatpak/flatpak-docs.html#flatpak-builder) for more details.
+
 #### options.bin
 Type: `String`
 Default: `package.name`
