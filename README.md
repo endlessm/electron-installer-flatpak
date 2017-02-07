@@ -7,20 +7,12 @@ with minimal configuration.
 
 ## Requirements
 
-This tool requires `flatpak` and `flatpak-builder` >= 0.6.13 to be installed on
+This tool requires `flatpak` and `flatpak-builder` >= 0.8.2 to be installed on
 your system. See http://flatpak.org/getting.html
 
 Building an electron flatpak requires installing a "base" flatpak
 application with electron library dependencies. That base will be autoinstalled
-during an app build, though this feature is [currently broken](https://github.com/flatpak/flatpak/issues/406)
-if building for multiple architectures at once. For multiple architectures the
-base app can be installed manually. For example, to build the example app in
-this repo for both i386 and x86_64...
-```
-$ flatpak --user remote-add endless-electron-apps --from https://s3-us-west-2.amazonaws.com/electron-flatpak.endlessm.com/endless-electron-apps.flatpakrepo
-$ flatpak --user install --no-deps endless-electron-apps io.atom.electron.BaseApp/x86_64/master io.atom.electron.BaseApp/i386/master
-$ cd example && npm install && npm run build
-```
+during an app build.
 
 Actually running the apps will require the freedesktop runtime to be installed.
 If you already are running flatpak apps you may have the freedesktop runtime
