@@ -114,6 +114,8 @@ var getDefaults = function (data, callback) {
 
       bin: pkg.name || 'electron',
       icon: path.resolve(__dirname, '../resources/icon.png'),
+      files: [],
+      symlinks: [],
 
       categories: [
         'GNOME',
@@ -282,6 +284,13 @@ var createBundle = function (options, dir, callback) {
   var extraExports = []
   if (!_.isObject(options.icon)) extraExports.push(getPixmapPath(options))
 
+  var files = [
+    [dir, '/']
+  ]
+  var symlinks = [
+    [path.join('/lib', options.id, options.bin), path.join('/bin', options.bin)]
+  ]
+
   flatpak.bundle({
     id: options.id,
     branch: options.branch,
@@ -293,12 +302,8 @@ var createBundle = function (options, dir, callback) {
     sdk: options.sdk,
     finishArgs: options.finishArgs,
     command: options.bin,
-    files: [
-      [dir, '/']
-    ],
-    symlinks: [
-      [path.join('/lib', options.id, options.bin), path.join('/bin', options.bin)]
-    ],
+    files: files.concat(options.files),
+    symlinks: symlinks.concat(options.symlinks),
     extraExports: extraExports,
     modules: options.modules
   }, {
