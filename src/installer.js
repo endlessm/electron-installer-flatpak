@@ -112,7 +112,7 @@ var getDefaults = function (data, callback) {
       ],
       modules: [],
 
-      bin: pkg.name || 'electron',
+      bin: pkg.productName || pkg.name || 'electron',
       icon: path.resolve(__dirname, '../resources/icon.png'),
       files: [],
       symlinks: [],
