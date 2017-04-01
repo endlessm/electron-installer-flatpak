@@ -318,6 +318,34 @@ Arguments to use when call `flatpak build-finish`, use in the [`finish-args` fie
 
 Changing this can be used to customize permissions of the sandbox the flatpak will run in.
 
+#### options.files
+Type: `Array[Array[source, dest]]`
+Default:
+```js
+[],
+```
+
+Files to copy directly into the app. Should be a list of [source, dest] tuples.
+Source should be a relative/absolute path to a file/directory to copy into the
+flatpak, and dest should be the path inside the app install prefix (e.g.
+/share/applications/)
+
+Application assets and code will be fully handled by `electron-packager`, but
+this is a useful way to install things such as appstream metadata for an app,
+or dbus configuration files.
+
+#### options.symlinks
+Type: `Array[Array[target, location]]`
+Default:
+```js
+[],
+```
+
+Symlinks to create in the app files. Should be a list of [target, location]
+symlink tuples. Target can be either a relative or absolute path inside the app
+install prefix, and location should be a absolute path inside the prefix to
+create the symlink at.
+
 #### options.modules
 Type: `Array[Object]`
 Default: `[]`

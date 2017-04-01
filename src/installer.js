@@ -112,8 +112,10 @@ var getDefaults = function (data, callback) {
       ],
       modules: [],
 
-      bin: pkg.name || 'electron',
+      bin: pkg.productName || pkg.name || 'electron',
       icon: path.resolve(__dirname, '../resources/icon.png'),
+      files: [],
+      symlinks: [],
 
       categories: [
         'GNOME',
@@ -204,8 +206,10 @@ var createHicolorIcon = function (options, dir, callback) {
 var createIcon = function (options, dir, callback) {
   if (_.isObject(options.icon)) {
     createHicolorIcon(options, dir, callback)
-  } else {
+  } else if (options.icon) {
     createPixmapIcon(options, dir, callback)
+  } else {
+    callback()
   }
 }
 
@@ -280,7 +284,14 @@ var createBundle = function (options, dir, callback) {
   var dest = options.rename(options.dest, name)
   options.logger('Creating package at ' + dest)
   var extraExports = []
-  if (!_.isObject(options.icon)) extraExports.push(getPixmapPath(options))
+  if (options.icon && !_.isObject(options.icon)) extraExports.push(getPixmapPath(options))
+
+  var files = [
+    [dir, '/']
+  ]
+  var symlinks = [
+    [path.join('/lib', options.id, options.bin), path.join('/bin', options.bin)]
+  ]
 
   flatpak.bundle({
     id: options.id,
@@ -293,12 +304,8 @@ var createBundle = function (options, dir, callback) {
     sdk: options.sdk,
     finishArgs: options.finishArgs,
     command: options.bin,
-    files: [
-      [dir, '/']
-    ],
-    symlinks: [
-      [path.join('/lib', options.id, options.bin), path.join('/bin', options.bin)]
-    ],
+    files: files.concat(options.files),
+    symlinks: symlinks.concat(options.symlinks),
     extraExports: extraExports,
     modules: options.modules
   }, {
