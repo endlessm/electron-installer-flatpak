@@ -22,6 +22,10 @@ var getPixmapPath = function (options) {
   return path.join('/share/pixmaps', options.id + '.png')
 }
 
+var sanitizePackageNameParts = function (parts) {
+  return parts.map(part => part.replace(/[^a-z0-9]+/gi, '_'))
+}
+
 var getAppId = function (name, website) {
   var host = 'electron.atom.io'
   if (website) {
@@ -30,7 +34,7 @@ var getAppId = function (name, website) {
   }
   var parts = host.split('.')
   if (parts[0] === 'www') parts.shift()
-  parts = parts.reverse()
+  parts = sanitizePackageNameParts(parts.reverse())
   parts.push(name)
   return parts.join('.')
 }
