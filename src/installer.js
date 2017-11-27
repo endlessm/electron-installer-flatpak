@@ -23,7 +23,7 @@ var getPixmapPath = function (options) {
 }
 
 var sanitizePackageNameParts = function (parts) {
-  return parts.map(part => part.replace(/[^a-z0-9]+/gi, '_'))
+  return parts.map(part => part.replace(/[^a-z0-9]/gi, '_'))
 }
 
 var getAppId = function (name, website) {
