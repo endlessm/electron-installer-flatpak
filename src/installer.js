@@ -23,7 +23,8 @@ var getPixmapPath = function (options) {
 }
 
 var sanitizePackageNameParts = function (parts) {
-  return parts.map(part => part.replace(/[^a-z0-9]/gi, '_'))
+  return parts.map(part =>
+    part.replace(/[^a-z0-9]/gi, '_').replace(/^[0-9]/, '_$&'))
 }
 
 var getAppId = function (name, website) {
@@ -36,7 +37,12 @@ var getAppId = function (name, website) {
   if (parts[0] === 'www') parts.shift()
   parts = sanitizePackageNameParts(parts.reverse())
   parts.push(name)
-  return parts.join('.')
+  var appId = parts.join('.')
+  while (appId.length > 255) {
+    parts.unshift()
+    appId = parts.join('.')
+  }
+  return appId
 }
 
 /**
