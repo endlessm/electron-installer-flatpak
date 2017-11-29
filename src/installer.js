@@ -103,7 +103,9 @@ var getDefaults = function (data, callback) {
       baseFlatpakref: 'https://s3-us-west-2.amazonaws.com/electron-flatpak.endlessm.com/electron-base-app-master.flatpakref',
       runtime: 'org.freedesktop.Platform',
       runtimeVersion: '1.4',
+      runtimeFlatpakref: 'https://raw.githubusercontent.com/endlessm/flatpak-bundler/master/refs/freedesktop-runtime-1.4.flatpakref',
       sdk: 'org.freedesktop.Sdk',
+      sdkFlatpakref: 'https://raw.githubusercontent.com/endlessm/flatpak-bundler/master/refs/freedesktop-sdk-1.4.flatpakref',
       finishArgs: [
         // X Rendering
         '--socket=x11', '--share=ipc',
@@ -311,7 +313,9 @@ var createBundle = function (options, dir, callback) {
     baseFlatpakref: options.baseFlatpakref,
     runtime: options.runtime,
     runtimeVersion: options.runtimeVersion,
+    runtimeFlatpakref: options.runtimeFlatpakref,
     sdk: options.sdk,
+    sdkFlatpakref: options.sdkFlatpakref,
     finishArgs: options.finishArgs,
     command: options.bin,
     files: files.concat(options.files),
