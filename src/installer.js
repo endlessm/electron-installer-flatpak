@@ -74,6 +74,17 @@ var readMeta = function (options, callback) {
  */
 var readLicense = function (options, callback) {
   var licenseSrc = path.join(options.src, 'LICENSE')
+  try {
+    fs.accessSync(licenseSrc)
+  } catch (err) {
+    try {
+      licenseSrc = path.join(options.src, 'LICENSE.txt')
+      fs.accessSync(licenseSrc)
+    } catch (err) {
+      licenseSrc = path.join(options.src, 'LICENSE.md')
+      fs.accessSync(licenseSrc)
+    }
+  }
   options.logger('Reading license file from ' + licenseSrc)
 
   fs.readFile(licenseSrc, callback)
