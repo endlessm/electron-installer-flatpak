@@ -127,7 +127,7 @@ var getDefaults = function (data, callback) {
         // Read/write home directory access
         '--filesystem=home',
         // Chromium uses a socket in tmp for its singleton check
-        '--filesystem=/tmp',
+        '--env=TMPDIR=/var/tmp',
         // Allow communication with network
         '--share=network',
         // System notifications with libnotify
@@ -320,10 +320,10 @@ var createBundle = function (options, dir, callback) {
     id: options.id,
     branch: options.branch,
     base: options.base,
-    baseVersion: options.baseVersion,
+    baseVersion: `${options.baseVersion}`,
     baseFlatpakref: options.baseFlatpakref,
     runtime: options.runtime,
-    runtimeVersion: options.runtimeVersion,
+    runtimeVersion: `${options.runtimeVersion}`,
     runtimeFlatpakref: options.runtimeFlatpakref,
     sdk: options.sdk,
     sdkFlatpakref: options.sdkFlatpakref,
